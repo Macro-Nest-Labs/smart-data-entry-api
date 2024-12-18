@@ -1,0 +1,328 @@
+scalar Date
+scalar JSON
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHERS
+}
+
+input SortColumn {
+  field: String
+  order: SortOrder
+}
+
+input SortInput {
+  order: [[String]]
+}
+
+input PaginationInput {
+  page: Int!
+  pageSize: Int!
+}
+
+type PageInfo {
+  currentPage: Int
+  perPage: Int
+  itemCount: Int
+  pageItemCount: Int
+  pageCount: Int
+  hasPreviousPage: Boolean
+  hasNextPage: Boolean
+}
+
+input Id {
+  id: String
+  uuid: String
+}
+
+input IdFilterConstraints {
+  ne: String
+  eq: String
+  in: [String]
+  nin: [String]
+}
+
+input StringFilterConstraint {
+  ne: String
+  eq: String
+  like: String
+  notLike: String
+  is: String
+  not: String
+  in: [String]
+  nin: [String]
+}
+
+input IntFilterConstraint {
+  in: [Int]
+  nin: [Int]
+  ne: Int
+  eq: Int
+  lte: Int
+  lt: Int
+  gte: Int
+  gt: Int
+}
+
+input FloatFilterConstraint {
+  in: [Float]
+  notIn: [Float]
+  ne: Float
+  eq: Float
+  lte: Int
+  lt: Int
+  gte: Int
+  gt: Float
+}
+
+input DateFilterConstraint {
+  lte: Date
+  lt: Date
+  gte: Date
+  gt: Date
+}
+
+input BooleanFilterConstraint {
+  is: String
+}
+
+# ======= User =======
+type User {
+  userId: String!
+  firstName: String
+  lastName: String
+  roles: [UserRole]
+}
+
+input WhereOptionsUser {
+  userId: String!
+}
+
+type Query {
+  User(where: WhereOptionsUser): User
+}
+
+# ======= UserRole =======
+type UserRole {
+  name: String!
+  permissions: [String!]!
+}
+
+type UserRoles {
+  results: [UserRole]
+  pageInfo: PageInfo
+}
+
+input WhereOptionsUserRole {
+  name: StringFilterConstraint
+}
+
+type Query {
+  UserRolesAll: [UserRole]
+  UserRole(where: WhereOptionsUserRole): UserRole
+}
+
+input CreateUserRole {
+  name: String!
+  permissions: [String!]!
+}
+
+input UpdateUserRole {
+  name: String
+  permissions: [String!]
+}
+
+input AssignUserRole {
+  userId: ID!
+  roleName: String!
+}
+
+input RemoveUserRole {
+  userId: ID!
+  roleName: String!
+}
+
+type Mutation {
+  createUserRole(item: CreateUserRole!): Boolean
+  deleteUserRole(name: String!): Boolean
+  assignRoleToUser(item: AssignUserRole): Boolean
+  removeRoleFromUser(item: RemoveUserRole): Boolean
+}
+
+# ======= Receipt Book =======
+type ReceiptBook {
+  id: ID!
+  uuid: String!
+  receiptBookNumber: Int!
+  receiptSeries: Int!
+  totalReceipts: Int!
+  financialYear: String
+
+  receipts: [Receipt]
+  usedReceipts: Int!
+}
+
+type ReceiptBooks {
+  results: [ReceiptBook]
+  pageInfo: PageInfo
+}
+
+input WhereOptionsReceiptBookFields {
+  id: String
+  uuid: IdFilterConstraints
+  receiptBookNumber: IntFilterConstraint
+  receiptSeries: IntFilterConstraint
+  totalReceipts: IntFilterConstraint
+  financialYear: String
+}
+
+input WhereOptionsReceiptBook {
+  and: [WhereOptionsReceiptBookFields]
+  or: [WhereOptionsReceiptBookFields]
+
+  id: String
+  uuid: IdFilterConstraints
+  receiptBookNumber: IntFilterConstraint
+  receiptSeries: IntFilterConstraint
+  totalReceipts: IntFilterConstraint
+  financialYear: String
+}
+
+type Query {
+  ReceiptBooksAll: [ReceiptBook]
+  ReceiptBooks(where: WhereOptionsReceiptBook, paginate: PaginationInput, sort: SortInput): ReceiptBooks
+  ReceiptBook(where: WhereOptionsReceiptBook): ReceiptBook
+}
+
+input CreateReceiptBook {
+  receiptBookNumber: Int!
+  receiptSeries: Int!
+  totalReceipts: Int!
+  financialYear: String
+}
+
+input UpdateReceiptBook {
+  receiptBookNumber: Int
+  receiptSeries: Int
+  totalReceipts: Int
+  financialYear: String
+}
+
+type Mutation {
+  createReceiptBook(item: CreateReceiptBook!): ReceiptBook
+  updateReceiptBook(id: String!, item: UpdateReceiptBook!): ReceiptBook
+  deleteReceiptBook(id: String!): ReceiptBook
+}
+
+# ======= Receipt =======
+enum IdCode {
+  Aadhar
+  PAN
+}
+
+enum ModeOfPayment {
+  cash
+  cheque
+  online
+}
+
+"Receipt Schema"
+type Receipt {
+  id: ID!
+  uuid: String!
+  receiptNumber: Int!
+  financialYear: String
+  date: Date
+  mobileNumber: String
+  name: String!
+  address: String
+  amount: Int!
+  modeOfPayment: ModeOfPayment!
+  aadharNumber: String
+  panNumber: String
+  idCode: IdCode
+  cancelled: Boolean
+
+  receiptBook: ReceiptBook!
+}
+
+type Receipts {
+  results: [Receipt]
+  pageInfo: PageInfo
+}
+
+input WhereOptionsReceiptFields {
+  id: String
+  uuid: IdFilterConstraints
+  address: StringFilterConstraint
+  receiptNumber: IntFilterConstraint
+  amount: IntFilterConstraint
+  modeOfPayment: StringFilterConstraint
+  financialYear: StringFilterConstraint
+  cancelled: BooleanFilterConstraint
+}
+
+input WhereOptionsReceipt {
+  and: [WhereOptionsReceiptFields]
+  or: [WhereOptionsReceiptFields]
+
+  id: String
+  uuid: IdFilterConstraints
+  address: StringFilterConstraint
+  receiptNumber: IntFilterConstraint
+  amount: IntFilterConstraint
+  modeOfPayment: StringFilterConstraint
+  idCode: StringFilterConstraint
+  financialYear: StringFilterConstraint
+  cancelled: BooleanFilterConstraint
+}
+
+type Query {
+  ReceiptsAll: [Receipt]
+  Receipts(where: WhereOptionsReceipt, paginate: PaginationInput, sort: SortInput): Receipts
+  Receipt(where: WhereOptionsReceipt): Receipt
+}
+
+input CreateReceipt {
+  receiptNumber: Int!
+  financialYear: String
+  date: Date
+  mobileNumber: String
+  name: String!
+  address: String
+  modeOfPayment: ModeOfPayment!
+  amount: Int!
+  aadharNumber: String
+  panNumber: String
+  cancelled: Boolean
+
+  receiptBookId: String!
+}
+
+input UpdateReceipt {
+  receiptNumber: Int
+  financialYear: String
+  date: Date
+  mobileNumber: String
+  name: String
+  address: String
+  amount: Int
+  modeOfPayment: String
+  aadharNumber: String
+  panNumber: String
+  cancelled: Boolean
+
+  receiptBookId: String
+}
+
+type Mutation {
+  createReceipt(item: CreateReceipt!): Receipt
+  updateReceipt(id: String!, item: UpdateReceipt!): Receipt
+  deleteReceipt(id: String!): Receipt
+}

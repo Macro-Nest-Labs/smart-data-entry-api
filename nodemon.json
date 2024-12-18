@@ -1,0 +1,20 @@
+{
+  "ignore": [
+    ".yarn",
+    ".circleci",
+    ".vscode",
+    ".clinic",
+    ".circleci",
+    "test",
+    "platform",
+    "node_modules",
+    "package.json",
+    "**/bin/**",
+    "**/lib/**",
+    "**/*.yml",
+    "package.json",
+    "**/*.md",
+    "**/*.yml",
+    "dist/app.js"
+  ]
+}

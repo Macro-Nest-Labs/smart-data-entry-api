@@ -1,0 +1,27 @@
+{
+  "root": true,
+  "plugins": ["@typescript-eslint", "simple-import-sort"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
+  "globals": {
+    "__ENV": "readonly"
+  },
+  "rules": {
+    "no-console": ["warn", { "allow": ["info", "error"] }],
+    "quotes": ["error", "single"],
+    "arrow-body-style": ["error", "as-needed"],
+    "no-underscore-dangle": "off",
+    "no-restricted-syntax": "off",
+
+    "simple-import-sort/imports": "warn",
+    "simple-import-sort/exports": "warn",
+
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "ctx|args|req|res|next|^_"
+      }
+    ],
+    "@typescript-eslint/no-empty-interface": "off"
+  },
+  "ignorePatterns": ["src/generated"]
+}
